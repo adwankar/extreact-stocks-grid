@@ -6,11 +6,18 @@ export default class StocksGrid extends Component {
     
     constructor() {
         super();
+        this.store = new Ext.data.Store({
+            data: stocks,
+            autoLoad: true,
+            sorters: [{
+                property: 'name'
+            }],
+        })
     }
 
     render() {
         return (
-           <Grid>
+           <Grid store={this.store}>
                 <Column dataIndex="name" text="Name" width={300} />
                 <Column dataIndex="symbol" text="Symbol" />
                 <Column dataIndex="ticks" text="Trend" />
