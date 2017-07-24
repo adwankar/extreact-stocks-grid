@@ -3,7 +3,9 @@ import stocks from '../data/stocks';
 import { Grid, Column, Button, RendererCell, Container, SparkLineLine, TitleBar, Menu, MenuItem, SelectField } from '@extjs/ext-react';
 
 Ext.require([
-    'Ext.Toast'
+    'Ext.Toast',
+    'Ext.grid.plugin.*',
+    'Ext.exporter.*'
 ]);
 
 export default class StocksGrid extends Component {
@@ -39,9 +41,40 @@ export default class StocksGrid extends Component {
         )
     }
 
+    export = (type) => {
+        this.grid.saveDocumentAs({
+            type,
+            title: 'Stocks'
+        });
+    }
+
     render() {
         return (
-           <Grid store={this.store}>
+           <Grid 
+                ref={grid => this.grid = grid} 
+                store={this.store}
+                platformConfig={{
+                    desktop: {
+                        plugins: {
+                            gridexporter: true
+                        }
+                    },
+                    '!desktop': {
+                        plugins: {
+                            gridexporter: true
+                        }
+                    }
+                }} 
+                >
+               <TitleBar docked="top" title="Stocks">
+                    <Button align="right" text="Export">
+                        <Menu indented={false}>
+                            <MenuItem text="Excel" handler={this.export.bind(this, 'excel07')}/>
+                            <MenuItem text="CSV" handler={this.export.bind(this, 'csv')}/>
+                        </Menu>
+                    </Button>
+                </TitleBar>
+
                 <Column renderer={this.actionsRenderer} ignoreExport/>
                 <Column dataIndex="name" text="Name" width={300} cell={ { style: {fontWeight:'bold'}}} />
                 <Column dataIndex="symbol" text="Symbol" renderer={value => <b>{value}</b>} />

@@ -21,6 +21,7 @@
   },
   "dependencies": {
     "@extjs/ext-react": "^6.5.1",
+    "@extjs/ext-react-exporter": "^6.5.1",
     "@extjs/reactor": "^1.1.0",
     "babel-polyfill": "^6.23.0",
     "babel-runtime": "^6.23.0",
