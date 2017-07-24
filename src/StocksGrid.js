@@ -29,13 +29,25 @@ export default class StocksGrid extends Component {
         Ext.toast(`Buy ${record.get('symbol')}`);
     }
 
+    renderTicks = (ticks) => {
+        return (
+            <SparkLineLine 
+                values={ticks} 
+                height={16} 
+                tipTpl='Price: {y:number("0.00")}'
+            />
+        )
+    }
+
     render() {
         return (
            <Grid store={this.store}>
                 <Column renderer={this.actionsRenderer} ignoreExport/>
                 <Column dataIndex="name" text="Name" width={300} cell={ { style: {fontWeight:'bold'}}} />
                 <Column dataIndex="symbol" text="Symbol" renderer={value => <b>{value}</b>} />
-                <Column dataIndex="ticks" text="Trend" />
+                <Column dataIndex="ticks" text="Trend" sortable={false} ignoreExport>
+                    <RendererCell forceWidth renderer={this.renderTicks} bodyStyle={{padding: 0}}/>
+                </Column>
                 <Column dataIndex="sector" text="Sector" width={200} />
                 <Column dataIndex="industry" text="Industry" width={350} />
             </Grid>
