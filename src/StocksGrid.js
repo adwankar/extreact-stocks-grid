@@ -8,6 +8,10 @@ Ext.require([
     'Ext.exporter.*'
 ]);
 
+let sectors = Array.from(new Set(stocks.map(stock => stock.sector))).map(sector => {
+    return { text: sector, value: sector }
+})
+
 export default class StocksGrid extends Component {
     
     constructor() {
@@ -18,6 +22,9 @@ export default class StocksGrid extends Component {
             sorters: [{
                 property: 'name'
             }],
+            listeners: {
+                update: this.onRecordUpdated
+            }
         })
     }
 
@@ -29,6 +36,11 @@ export default class StocksGrid extends Component {
 
     buy = (record) => {
         Ext.toast(`Buy ${record.get('symbol')}`);
+    }
+
+    onRecordUpdated = (store, record, operation, modifiedFieldNames) => {
+        const field = modifiedFieldNames[0];
+        Ext.toast(`${record.get('name')} ${field} updated to ${record.get(field)}`)
     }
 
     renderTicks = (ticks) => {
@@ -56,12 +68,14 @@ export default class StocksGrid extends Component {
                 platformConfig={{
                     desktop: {
                         plugins: {
-                            gridexporter: true
+                            gridexporter: true,
+                            gridcellediting: true
                         }
                     },
                     '!desktop': {
                         plugins: {
-                            gridexporter: true
+                            gridexporter: true,
+                            grideditable: true
                         }
                     }
                 }} 
@@ -76,13 +90,15 @@ export default class StocksGrid extends Component {
                 </TitleBar>
 
                 <Column renderer={this.actionsRenderer} ignoreExport/>
-                <Column dataIndex="name" text="Name" width={300} cell={ { style: {fontWeight:'bold'}}} />
+                <Column dataIndex="name" text="Name" width={300} cell={ { style: {fontWeight:'bold'}}} editable />
                 <Column dataIndex="symbol" text="Symbol" renderer={value => <b>{value}</b>} />
                 <Column dataIndex="ticks" text="Trend" sortable={false} ignoreExport>
                     <RendererCell forceWidth renderer={this.renderTicks} bodyStyle={{padding: 0}}/>
                 </Column>
-                <Column dataIndex="sector" text="Sector" width={200} />
-                <Column dataIndex="industry" text="Industry" width={350} />
+                <Column dataIndex="sector" text="Sector" width={200} editable>
+                    <SelectField options={sectors}/>
+                </Column>
+                <Column dataIndex="industry" text="Industry" width={350} editable />
             </Grid>
         );
     }
